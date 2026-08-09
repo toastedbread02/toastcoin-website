@@ -1,43 +1,456 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>ToastCoin</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <title>ToastCoin Exchange</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-    <main>
+<header class="topbar">
 
-        <h1>🍞 ToastCoin</h1>
+    <div class="logo">
+        🍞 <span>ToastCoin</span>
+    </div>
 
-        <p class="symbol">TOAST</p>
+    <div class="network">
+        TESTNET
+    </div>
 
-        <div class="price">
-            0.00000000 CHF
+    <nav>
+
+        <a href="index.html">
+            Market
+        </a>
+
+        <a href="wallet.html">
+            Wallet
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main>
+
+    <section class="market-header">
+
+        <div>
+
+            <div class="pair">
+                TOAST / CHF
+            </div>
+
+            <div
+                class="price"
+                id="price"
+            >
+                0.0000 CHF
+            </div>
+
+            <div
+                class="market-info"
+                id="marketInfo"
+            >
+                Loading market...
+            </div>
+
         </div>
 
-        <p>Proof of Toast.</p>
+    </section>
 
-        <section>
 
-            <h2>Network</h2>
+    <section class="chart-card">
 
-            <p>Blocks: <span id="blocks">0</span></p>
+        <div class="chart-toolbar">
 
-            <p>Difficulty: <span id="difficulty">3</span></p>
+            <button
+                class="range active"
+                data-range="1M"
+            >
+                1M
+            </button>
 
-            <p>Mining reward: <span id="reward">50 TOAST</span></p>
+            <button
+                class="range"
+                data-range="1D"
+            >
+                1D
+            </button>
 
-        </section>
+            <button
+                class="range"
+                data-range="1MON"
+            >
+                1MON
+            </button>
 
-    </main>
+            <button
+                class="range"
+                data-range="1Y"
+            >
+                1Y
+            </button>
 
-    <script src="script.js"></script>
+            <button
+                class="range"
+                data-range="MAX"
+            >
+                MAX
+            </button>
+
+        </div>
+
+
+        <div class="chart-wrap">
+
+            <canvas id="chart"></canvas>
+
+            <div
+                class="chart-empty"
+                id="chartEmpty"
+            >
+                Waiting for trades...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="trade-grid">
+
+
+        <div class="card">
+
+            <h2>Buy TOAST</h2>
+
+            <p class="hint">
+                Spend test CHF to buy TOAST.
+            </p>
+
+
+            <label>
+                Amount
+            </label>
+
+            <input
+                id="buyAmount"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="100"
+            >
+
+
+            <label>
+                Maximum price
+            </label>
+
+            <input
+                id="buyPrice"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="0.0100"
+            >
+
+
+            <div
+                class="order-total"
+                id="buyTotal"
+            >
+                Total: 0.00 CHF
+            </div>
+
+
+            <button
+                class="buy-button"
+                onclick="placeBuy()"
+            >
+                Buy TOAST
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>Sell TOAST</h2>
+
+            <p class="hint">
+                Sell TOAST for test CHF.
+            </p>
+
+
+            <label>
+                Amount
+            </label>
+
+            <input
+                id="sellAmount"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="100"
+            >
+
+
+            <label>
+                Minimum price
+            </label>
+
+            <input
+                id="sellPrice"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="0.0100"
+            >
+
+
+            <div
+                class="order-total"
+                id="sellTotal"
+            >
+                Value: 0.00 CHF
+            </div>
+
+
+            <button
+                class="sell-button"
+                onclick="placeSell()"
+            >
+                Sell TOAST
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section class="card wallet-card">
+
+        <div class="section-title">
+
+            <div>
+
+                <h2>Your Testnet Wallet</h2>
+
+                <p class="hint">
+                    Enter an address to trade.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="wallet-input">
+
+            <input
+                id="walletAddress"
+                placeholder="toastedbread-test-wallet"
+            >
+
+            <button
+                onclick="loadWallet()"
+            >
+                Load
+            </button>
+
+        </div>
+
+
+        <div class="balances">
+
+            <div class="balance">
+
+                <span>Available TOAST</span>
+
+                <strong id="toastBalance">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="balance">
+
+                <span>Locked TOAST</span>
+
+                <strong id="toastLocked">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="balance">
+
+                <span>Available CHF</span>
+
+                <strong id="chfBalance">
+                    0.00
+                </strong>
+
+            </div>
+
+
+            <div class="balance">
+
+                <span>Locked CHF</span>
+
+                <strong id="chfLocked">
+                    0.00
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="market-grid">
+
+
+        <div class="card">
+
+            <h2>Order Book</h2>
+
+
+            <div class="book-head">
+
+                <span>Price</span>
+                <span>TOAST</span>
+
+            </div>
+
+
+            <div
+                class="orders asks"
+                id="asks"
+            >
+                Loading...
+            </div>
+
+
+            <div class="spread">
+                —
+            </div>
+
+
+            <div
+                class="orders bids"
+                id="bids"
+            >
+                Loading...
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>Recent Trades</h2>
+
+
+            <div class="book-head">
+
+                <span>Price</span>
+                <span>Amount</span>
+
+            </div>
+
+
+            <div
+                class="trades"
+                id="trades"
+            >
+                Loading...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="card faucet">
+
+        <div>
+
+            <h2>🍞 Testnet Faucet</h2>
+
+            <p>
+                Free test TOAST and test CHF.
+                These tokens have no real-world value.
+            </p>
+
+        </div>
+
+
+        <button
+            onclick="claimFaucet()"
+        >
+            Get 1,000 TOAST + 100 CHF
+        </button>
+
+
+        <div
+            id="faucetMessage"
+            class="message"
+        ></div>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>Open Orders</h2>
+
+        <div
+            id="myOrders"
+            class="orders"
+        >
+            Enter a wallet address to see orders.
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<footer>
+
+    🍞 ToastCoin Exchange
+
+    <span>
+        Testnet • Proof of Toast
+    </span>
+
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
+
 </html>
