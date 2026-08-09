@@ -1,456 +1,826 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+```
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>ToastCoin Exchange</title>
+<meta
+    name="theme-color"
+    content="#09090b"
+>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+<title>ToastCoin — Exchange</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+```
 
 </head>
 
-
 <body>
 
-<header class="topbar">
+<div class="ambient ambient-one"></div>
+<div class="ambient ambient-two"></div>
 
-    <div class="logo">
-        🍞 <span>ToastCoin</span>
-    </div>
+<header class="navbar">
 
-    <div class="network">
+```
+<a
+    href="index.html"
+    class="brand"
+>
+    <span class="brand-icon">🍞</span>
+
+    <span class="brand-text">
+        ToastCoin
+    </span>
+
+    <span class="testnet-pill">
         TESTNET
-    </div>
+    </span>
+</a>
 
-    <nav>
+<nav class="nav-links">
 
-        <a href="index.html">
-            Market
-        </a>
+    <a
+        href="index.html"
+        class="nav-active"
+    >
+        Markets
+    </a>
 
-        <a href="wallet.html">
-            Wallet
-        </a>
+    <a href="wallet.html">
+        Wallet
+    </a>
 
-    </nav>
+</nav>
+
+<div class="nav-status">
+    <span class="status-dot"></span>
+    Network online
+</div>
+```
 
 </header>
 
+<main class="page">
 
-<main>
+```
+<section class="hero-market">
 
-    <section class="market-header">
+    <div class="pair-area">
+
+        <div class="coin-icon">
+            🍞
+        </div>
 
         <div>
 
-            <div class="pair">
-                TOAST / CHF
+            <div class="pair-title">
+                TOAST
+                <span>/ CHF</span>
             </div>
 
-            <div
-                class="price"
-                id="price"
-            >
-                0.0000 CHF
-            </div>
-
-            <div
-                class="market-info"
-                id="marketInfo"
-            >
-                Loading market...
+            <div class="pair-subtitle">
+                ToastCoin
+                <span class="separator">•</span>
+                Testnet
             </div>
 
         </div>
 
-    </section>
+    </div>
 
 
-    <section class="chart-card">
+    <div class="price-area">
 
-        <div class="chart-toolbar">
-
-            <button
-                class="range active"
-                data-range="1M"
-            >
-                1M
-            </button>
-
-            <button
-                class="range"
-                data-range="1D"
-            >
-                1D
-            </button>
-
-            <button
-                class="range"
-                data-range="1MON"
-            >
-                1MON
-            </button>
-
-            <button
-                class="range"
-                data-range="1Y"
-            >
-                1Y
-            </button>
-
-            <button
-                class="range"
-                data-range="MAX"
-            >
-                MAX
-            </button>
-
+        <div
+            class="main-price"
+            id="price"
+        >
+            0.0000
         </div>
 
-
-        <div class="chart-wrap">
-
-            <canvas id="chart"></canvas>
-
-            <div
-                class="chart-empty"
-                id="chartEmpty"
-            >
-                Waiting for trades...
-            </div>
-
+        <div class="price-currency">
+            CHF
         </div>
 
-    </section>
+    </div>
 
 
-    <section class="trade-grid">
+    <div
+        class="market-info"
+        id="marketInfo"
+    >
+        Loading market data...
+    </div>
+
+</section>
 
 
-        <div class="card">
-
-            <h2>Buy TOAST</h2>
-
-            <p class="hint">
-                Spend test CHF to buy TOAST.
-            </p>
+<section class="main-grid">
 
 
-            <label>
-                Amount
-            </label>
-
-            <input
-                id="buyAmount"
-                type="number"
-                min="0"
-                step="any"
-                placeholder="100"
-            >
+    <div class="left-column">
 
 
-            <label>
-                Maximum price
-            </label>
+        <section class="panel chart-panel">
 
-            <input
-                id="buyPrice"
-                type="number"
-                min="0"
-                step="any"
-                placeholder="0.0100"
-            >
+            <div class="panel-header">
 
+                <div>
 
-            <div
-                class="order-total"
-                id="buyTotal"
-            >
-                Total: 0.00 CHF
-            </div>
+                    <div class="panel-title">
+                        Price
+                    </div>
+
+                    <div class="panel-subtitle">
+                        TOAST / CHF
+                    </div>
+
+                </div>
 
 
-            <button
-                class="buy-button"
-                onclick="placeBuy()"
-            >
-                Buy TOAST
-            </button>
+                <div class="chart-ranges">
 
-        </div>
+                    <button
+                        class="range active"
+                        data-range="1M"
+                    >
+                        1M
+                    </button>
 
+                    <button
+                        class="range"
+                        data-range="1D"
+                    >
+                        1D
+                    </button>
 
-        <div class="card">
+                    <button
+                        class="range"
+                        data-range="1MON"
+                    >
+                        1MON
+                    </button>
 
-            <h2>Sell TOAST</h2>
+                    <button
+                        class="range"
+                        data-range="1Y"
+                    >
+                        1Y
+                    </button>
 
-            <p class="hint">
-                Sell TOAST for test CHF.
-            </p>
+                    <button
+                        class="range"
+                        data-range="MAX"
+                    >
+                        MAX
+                    </button>
 
-
-            <label>
-                Amount
-            </label>
-
-            <input
-                id="sellAmount"
-                type="number"
-                min="0"
-                step="any"
-                placeholder="100"
-            >
-
-
-            <label>
-                Minimum price
-            </label>
-
-            <input
-                id="sellPrice"
-                type="number"
-                min="0"
-                step="any"
-                placeholder="0.0100"
-            >
-
-
-            <div
-                class="order-total"
-                id="sellTotal"
-            >
-                Value: 0.00 CHF
-            </div>
-
-
-            <button
-                class="sell-button"
-                onclick="placeSell()"
-            >
-                Sell TOAST
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <section class="card wallet-card">
-
-        <div class="section-title">
-
-            <div>
-
-                <h2>Your Testnet Wallet</h2>
-
-                <p class="hint">
-                    Enter an address to trade.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="wallet-input">
-
-            <input
-                id="walletAddress"
-                placeholder="toastedbread-test-wallet"
-            >
-
-            <button
-                onclick="loadWallet()"
-            >
-                Load
-            </button>
-
-        </div>
-
-
-        <div class="balances">
-
-            <div class="balance">
-
-                <span>Available TOAST</span>
-
-                <strong id="toastBalance">
-                    0
-                </strong>
+                </div>
 
             </div>
 
 
-            <div class="balance">
+            <div class="chart-wrap">
 
-                <span>Locked TOAST</span>
+                <div class="chart-grid-lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
 
-                <strong id="toastLocked">
-                    0
-                </strong>
+                <canvas id="chart"></canvas>
 
-            </div>
+                <div
+                    class="chart-empty"
+                    id="chartEmpty"
+                >
+                    <div class="empty-icon">
+                        🍞
+                    </div>
 
-
-            <div class="balance">
-
-                <span>Available CHF</span>
-
-                <strong id="chfBalance">
-                    0.00
-                </strong>
-
-            </div>
-
-
-            <div class="balance">
-
-                <span>Locked CHF</span>
-
-                <strong id="chfLocked">
-                    0.00
-                </strong>
+                    <span>
+                        Waiting for ToastCoin trades
+                    </span>
+                </div>
 
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
 
-    <section class="market-grid">
+        <section class="panel trading-panel">
 
+            <div class="trade-tabs">
 
-        <div class="card">
+                <button
+                    class="trade-tab active"
+                    id="buyTab"
+                    onclick="showTrade('buy')"
+                >
+                    Buy
+                </button>
 
-            <h2>Order Book</h2>
-
-
-            <div class="book-head">
-
-                <span>Price</span>
-                <span>TOAST</span>
+                <button
+                    class="trade-tab"
+                    id="sellTab"
+                    onclick="showTrade('sell')"
+                >
+                    Sell
+                </button>
 
             </div>
 
 
             <div
-                class="orders asks"
+                class="trade-form"
+                id="buyForm"
+            >
+
+                <div class="available">
+                    Available
+                    <span id="availableCHF">
+                        —
+                    </span>
+                </div>
+
+
+                <label>
+                    Amount
+                </label>
+
+                <div class="input-wrap">
+
+                    <input
+                        id="buyAmount"
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="0.00"
+                    >
+
+                    <span>
+                        TOAST
+                    </span>
+
+                </div>
+
+
+                <label>
+                    Limit price
+                </label>
+
+                <div class="input-wrap">
+
+                    <input
+                        id="buyPrice"
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="0.0000"
+                    >
+
+                    <span>
+                        CHF
+                    </span>
+
+                </div>
+
+
+                <div class="order-summary">
+
+                    <span>
+                        Estimated total
+                    </span>
+
+                    <strong id="buyTotal">
+                        0.0000 CHF
+                    </strong>
+
+                </div>
+
+
+                <button
+                    class="primary-action"
+                    onclick="placeBuy()"
+                >
+                    <span>Buy TOAST</span>
+                    <span>→</span>
+                </button>
+
+            </div>
+
+
+            <div
+                class="trade-form hidden"
+                id="sellForm"
+            >
+
+                <div class="available">
+                    Available
+                    <span id="availableTOAST">
+                        —
+                    </span>
+                </div>
+
+
+                <label>
+                    Amount
+                </label>
+
+                <div class="input-wrap">
+
+                    <input
+                        id="sellAmount"
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="0.00"
+                    >
+
+                    <span>
+                        TOAST
+                    </span>
+
+                </div>
+
+
+                <label>
+                    Limit price
+                </label>
+
+                <div class="input-wrap">
+
+                    <input
+                        id="sellPrice"
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="0.0000"
+                    >
+
+                    <span>
+                        CHF
+                    </span>
+
+                </div>
+
+
+                <div class="order-summary">
+
+                    <span>
+                        Estimated total
+                    </span>
+
+                    <strong id="sellTotal">
+                        0.0000 CHF
+                    </strong>
+
+                </div>
+
+
+                <button
+                    class="primary-action sell-action"
+                    onclick="placeSell()"
+                >
+                    <span>Sell TOAST</span>
+                    <span>→</span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section class="panel wallet-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-title">
+                        Your wallet
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Testnet account
+                    </div>
+
+                </div>
+
+                <a
+                    href="wallet.html"
+                    class="small-link"
+                >
+                    Open wallet →
+                </a>
+
+            </div>
+
+
+            <div class="wallet-address">
+
+                <input
+                    id="walletAddress"
+                    placeholder="Enter testnet wallet address"
+                >
+
+                <button
+                    class="load-button"
+                    onclick="loadWallet()"
+                >
+                    Connect
+                </button>
+
+            </div>
+
+
+            <div class="balance-grid">
+
+                <div class="balance-box">
+
+                    <span class="balance-label">
+                        Available TOAST
+                    </span>
+
+                    <strong id="toastBalance">
+                        0
+                    </strong>
+
+                    <small id="toastLocked">
+                        0 locked
+                    </small>
+
+                </div>
+
+
+                <div class="balance-box">
+
+                    <span class="balance-label">
+                        Available CHF
+                    </span>
+
+                    <strong id="chfBalance">
+                        0.00
+                    </strong>
+
+                    <small id="chfLocked">
+                        0.00 locked
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <div class="right-column">
+
+
+        <section class="panel orderbook-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-title">
+                        Order book
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Live market depth
+                    </div>
+
+                </div>
+
+                <span class="live-label">
+                    LIVE
+                </span>
+
+            </div>
+
+
+            <div class="book-columns">
+                <span>Price (CHF)</span>
+                <span>Amount</span>
+            </div>
+
+
+            <div
+                class="order-list asks"
                 id="asks"
             >
-                Loading...
+                <div class="loading">
+                    Loading...
+                </div>
             </div>
 
 
-            <div class="spread">
-                —
+            <div class="mid-price">
+
+                <span></span>
+
+                <strong id="bookPrice">
+                    —
+                </strong>
+
+                <span></span>
+
             </div>
 
 
             <div
-                class="orders bids"
+                class="order-list bids"
                 id="bids"
             >
-                Loading...
+                <div class="loading">
+                    Loading...
+                </div>
             </div>
 
-        </div>
+        </section>
 
 
-        <div class="card">
+        <section class="panel trades-panel">
 
-            <h2>Recent Trades</h2>
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-title">
+                        Recent trades
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Latest ToastCoin activity
+                    </div>
+
+                </div>
+
+            </div>
 
 
-            <div class="book-head">
-
+            <div class="trade-columns">
                 <span>Price</span>
                 <span>Amount</span>
-
             </div>
 
 
             <div
-                class="trades"
                 id="trades"
+                class="recent-trades"
             >
-                Loading...
+                <div class="loading">
+                    Loading...
+                </div>
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
 
-    <section class="card faucet">
+        <section class="faucet-card">
 
-        <div>
+            <div class="faucet-icon">
+                🍞
+            </div>
 
-            <h2>🍞 Testnet Faucet</h2>
+            <div class="faucet-content">
 
-            <p>
-                Free test TOAST and test CHF.
-                These tokens have no real-world value.
-            </p>
+                <div class="faucet-title">
+                    Testnet faucet
+                </div>
 
-        </div>
+                <div class="faucet-description">
+                    Get free TOAST and test CHF.
+                </div>
+
+            </div>
+
+            <button
+                class="faucet-button"
+                onclick="claimFaucet()"
+            >
+                Claim
+            </button>
+
+            <div
+                class="faucet-message"
+                id="faucetMessage"
+            ></div>
+
+        </section>
+
+    </div>
+
+</section>
 
 
-        <button
-            onclick="claimFaucet()"
-        >
-            Get 1,000 TOAST + 100 CHF
-        </button>
+<section class="footer-stats">
 
+    <div>
+        <span>Network</span>
+        <strong>ToastNet Testnet</strong>
+    </div>
 
-        <div
-            id="faucetMessage"
-            class="message"
-        ></div>
+    <div>
+        <span>Consensus</span>
+        <strong>Proof of Toast</strong>
+    </div>
 
-    </section>
+    <div>
+        <span>Asset</span>
+        <strong>TOAST</strong>
+    </div>
 
+    <div>
+        <span>Status</span>
+        <strong class="online">
+            ● Operational
+        </strong>
+    </div>
 
-    <section class="card">
-
-        <h2>Open Orders</h2>
-
-        <div
-            id="myOrders"
-            class="orders"
-        >
-            Enter a wallet address to see orders.
-        </div>
-
-    </section>
-
+</section>
+```
 
 </main>
 
+<footer class="footer">
 
-<footer>
+```
+<div>
+    🍞 ToastCoin
+</div>
 
-    🍞 ToastCoin Exchange
-
-    <span>
-        Testnet • Proof of Toast
-    </span>
+<div>
+    Experimental testnet exchange
+</div>
+```
 
 </footer>
 
-
 <script src="script.js"></script>
 
-</body>
+<script>
 
+function showTrade(type) {
+
+    const buy =
+        document.getElementById(
+            "buyForm"
+        );
+
+    const sell =
+        document.getElementById(
+            "sellForm"
+        );
+
+    const buyTab =
+        document.getElementById(
+            "buyTab"
+        );
+
+    const sellTab =
+        document.getElementById(
+            "sellTab"
+        );
+
+
+    if (type === "buy") {
+
+        buy.classList.remove("hidden");
+        sell.classList.add("hidden");
+
+        buyTab.classList.add("active");
+        sellTab.classList.remove("active");
+
+    } else {
+
+        sell.classList.remove("hidden");
+        buy.classList.add("hidden");
+
+        sellTab.classList.add("active");
+        buyTab.classList.remove("active");
+
+    }
+
+}
+
+
+function updateWalletNumbers() {
+
+    const toast =
+        document.getElementById(
+            "toastBalance"
+        );
+
+    const chf =
+        document.getElementById(
+            "chfBalance"
+        );
+
+
+    const availableToast =
+        document.getElementById(
+            "availableTOAST"
+        );
+
+    const availableCHF =
+        document.getElementById(
+            "availableCHF"
+        );
+
+
+    if (toast && availableToast) {
+
+        availableToast.textContent =
+            toast.textContent +
+            " TOAST";
+
+    }
+
+
+    if (chf && availableCHF) {
+
+        availableCHF.textContent =
+            chf.textContent +
+            " CHF";
+
+    }
+
+}
+
+
+const originalRefreshWallet =
+    window.refreshWallet;
+
+
+if (originalRefreshWallet) {
+
+    window.refreshWallet =
+        async function () {
+
+            await originalRefreshWallet();
+
+            updateWalletNumbers();
+
+        };
+
+}
+
+
+const originalLoadMarket =
+    window.loadMarket;
+
+
+if (originalLoadMarket) {
+
+    window.loadMarket =
+        async function () {
+
+            await originalLoadMarket();
+
+            const price =
+                document.getElementById(
+                    "price"
+                );
+
+            const bookPrice =
+                document.getElementById(
+                    "bookPrice"
+                );
+
+
+            if (
+                price &&
+                bookPrice
+            ) {
+
+                bookPrice.textContent =
+                    price.textContent;
+
+            }
+
+        };
+
+}
+
+
+</script>
+
+</body>
 </html>
