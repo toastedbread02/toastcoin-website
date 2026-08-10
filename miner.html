@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08080a">
+    <title>ToastMiner • ToastCoin</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+    .miner-page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 48px 20px 80px;
+    }
+
+    .miner-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .miner-icon {
+        font-size: 64px;
+        margin-bottom: 12px;
+    }
+
+    .miner-title {
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        margin: 0;
+    }
+
+    .miner-subtitle {
+        color: #85858e;
+        margin-top: 10px;
+    }
+
+    .miner-card {
+        background: rgba(19, 19, 23, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .miner-status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #85858e;
+        margin-bottom: 28px;
+    }
+
+    .status-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #555;
+    }
+
+    .status-dot.mining {
+        background: #e4a03a;
+        box-shadow: 0 0 14px rgba(228, 160, 58, 0.7);
+    }
+
+    .reward {
+        text-align: center;
+        font-size: 56px;
+        font-weight: 800;
+        letter-spacing: -2px;
+    }
+
+    .reward span {
+        color: #e4a03a;
+    }
+
+    .reward-label {
+        text-align: center;
+        color: #85858e;
+        margin-top: 4px;
+        margin-bottom: 28px;
+    }
+
+    .progress-wrap {
+        height: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .progress {
+        width: 0%;
+        height: 100%;
+        background: #e4a03a;
+        border-radius: inherit;
+        transition: width 0.2s linear;
+    }
+
+    .progress-text {
+        text-align: center;
+        color: #85858e;
+        font-size: 14px;
+        margin-bottom: 28px;
+    }
+
+    .miner-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 28px;
+    }
+
+    .stat {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 18px;
+        text-align: center;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .stat-value {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .wallet-box {
+        margin-bottom: 20px;
+    }
+
+    .wallet-box label {
+        display: block;
+        color: #85858e;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .wallet-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.25);
+        color: #f5f5f7;
+        outline: none;
+        font-size: 15px;
+    }
+
+    .wallet-input:focus {
+        border-color: rgba(228, 160, 58, 0.5);
+    }
+
+    .miner-button {
+        width: 100%;
+        border: 0;
+        border-radius: 14px;
+        padding: 15px 20px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        background: #e4a03a;
+        color: #111;
+        transition:
+            transform 0.15s ease,
+            opacity 0.15s ease;
+    }
+
+    .miner-button:hover {
+        transform: translateY(-1px);
+    }
+
+    .miner-button:active {
+        transform: translateY(1px);
+    }
+
+    .miner-button.stop {
+        background: rgba(255, 255, 255, 0.08);
+        color: #f5f5f7;
+    }
+
+    .miner-note {
+        text-align: center;
+        color: #666;
+        font-size: 13px;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 650px) {
+        .miner-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .reward {
+            font-size: 42px;
+        }
+
+        .miner-card {
+            padding: 22px;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+
+
+<main class="miner-page">
+
+    <div class="miner-header">
+        <div class="miner-icon">🍞</div>
+
+        <h1 class="miner-title">
+            ToastMiner
+        </h1>
+
+        <p class="miner-subtitle">
+            Mine TOAST on the ToastCoin testnet.
+        </p>
+    </div>
+
+    <section class="miner-card">
+
+        <div class="miner-status">
+            <div
+                id="statusDot"
+                class="status-dot"
+            ></div>
+
+            <span id="status">
+                Ready to mine
+            </span>
+        </div>
+
+        <div class="reward">
+            <span id="mined">
+                0.0000
+            </span>
+            TOAST
+        </div>
+
+        <div class="reward-label">
+            mined this session
+        </div>
+
+        <div class="progress-wrap">
+            <div
+                id="progress"
+                class="progress"
+            ></div>
+        </div>
+
+        <div
+            id="progressText"
+            class="progress-text"
+        >
+            0% • 10:00 remaining
+        </div>
+
+        <div class="miner-stats">
+
+            <div class="stat">
+                <div class="stat-label">
+                    Mining rate
+                </div>
+
+                <div class="stat-value">
+                    100 TOAST / 10 min
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    Hashrate
+                </div>
+
+                <div
+                    id="hashrate"
+                    class="stat-value"
+                >
+                    0 H/s
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    Time
+                </div>
+
+                <div
+                    id="time"
+                    class="stat-value"
+                >
+                    10:00
+                </div>
+            </div>
+
+        </div>
+
+        <div class="wallet-box">
+
+            <label for="wallet">
+                ToastCoin wallet address
+            </label>
+
+            <input
+                id="wallet"
+                class="wallet-input"
+                type="text"
+                placeholder="Enter your testnet wallet address"
+            >
+
+        </div>
+
+        <button
+            id="mineButton"
+            class="miner-button"
+        >
+            Start Mining
+        </button>
+
+        <div class="miner-note">
+            ToastMiner is running on the ToastCoin testnet.
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+    const mineButton =
+        document.getElementById("mineButton");
+
+    const status =
+        document.getElementById("status");
+
+    const statusDot =
+        document.getElementById("statusDot");
+
+    const mined =
+        document.getElementById("mined");
+
+    const progress =
+        document.getElementById("progress");
+
+    const progressText =
+        document.getElementById("progressText");
+
+    const hashrate =
+        document.getElementById("hashrate");
+
+    const time =
+        document.getElementById("time");
+
+    const wallet =
+        document.getElementById("wallet");
+
+    let mining = false;
+    let started = 0;
+    let timer = null;
+
+    const DURATION = 600;
+    const REWARD = 100;
+
+    function formatTime(seconds) {
+        const minutes =
+            Math.floor(seconds / 60);
+
+        const secs =
+            Math.floor(seconds % 60);
+
+        return (
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(secs).padStart(2, "0")
+        );
+    }
+
+    function updateMiner() {
+        if (!mining) return;
+
+        const elapsed =
+            (Date.now() - started) / 1000;
+
+        const clamped =
+            Math.min(elapsed, DURATION);
+
+        const percent =
+            (clamped / DURATION) * 100;
+
+        const reward =
+            (clamped / DURATION) * REWARD;
+
+        const remaining =
+            Math.max(0, DURATION - clamped);
+
+        mined.textContent =
+            reward.toFixed(4);
+
+        progress.style.width =
+            percent + "%";
+
+        progressText.textContent =
+            Math.floor(percent) +
+            "% • " +
+            formatTime(remaining) +
+            " remaining";
+
+        time.textContent =
+            formatTime(remaining);
+
+        hashrate.textContent =
+            Math.floor(
+                100 +
+                Math.random() * 100
+            ) +
+            " H/s";
+
+        if (clamped >= DURATION) {
+            stopMining();
+        }
+    }
+
+    function startMining() {
+        if (!wallet.value.trim()) {
+            alert(
+                "Enter your ToastCoin wallet address first."
+            );
+            return;
+        }
+
+        mining = true;
+        started = Date.now();
+
+        status.textContent =
+            "Mining TOAST...";
+
+        statusDot.classList.add(
+            "mining"
+        );
+
+        mineButton.textContent =
+            "Stop Mining";
+
+        mineButton.classList.add(
+            "stop"
+        );
+
+        timer =
+            setInterval(
+                updateMiner,
+                100
+            );
+
+        updateMiner();
+    }
+
+    function stopMining() {
+        mining = false;
+
+        clearInterval(timer);
+
+        timer = null;
+
+        status.textContent =
+            "Mining stopped";
+
+        statusDot.classList.remove(
+            "mining"
+        );
+
+        mineButton.textContent =
+            "Start Mining";
+
+        mineButton.classList.remove(
+            "stop"
+        );
+    }
+
+    mineButton.addEventListener(
+        "click",
+        () => {
+            if (mining) {
+                stopMining();
+            } else {
+                startMining();
+            }
+        }
+    );
+<script>
+const API = "https://toastcoin-exchange.dominikkoba22.workers.dev";
+
+const mineButton =
+    document.getElementById("mineButton");
+
+const status =
+    document.getElementById("status");
+
+const statusDot =
+    document.getElementById("statusDot");
+
+const mined =
+    document.getElementById("mined");
+
+const progress =
+    document.getElementById("progress");
+
+const progressText =
+    document.getElementById("progressText");
+
+const hashrate =
+    document.getElementById("hashrate");
+
+const time =
+    document.getElementById("time");
+
+const wallet =
+    document.getElementById("wallet");
+
+let mining = false;
+let sessionId = null;
+let started = 0;
+let timer = null;
+
+const DURATION = 600;
+const REWARD = 100;
+
+function formatTime(seconds) {
+    const minutes =
+        Math.floor(seconds / 60);
+
+    const secs =
+        Math.floor(seconds % 60);
+
+    return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(secs).padStart(2, "0")
+    );
+}
+
+async function startMining() {
+
+    const address =
+        wallet.value.trim();
+
+    if (!address) {
+        alert(
+            "Enter your ToastCoin wallet address first."
+        );
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                API + "/api/miner/start",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            address
+                        })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                "Could not start mining"
+            );
+        }
+
+        sessionId =
+            data.sessionId;
+
+        started =
+            data.startedAt * 1000;
+
+        mining = true;
+
+        status.textContent =
+            "Mining TOAST...";
+
+        statusDot.classList.add(
+            "mining"
+        );
+
+        mineButton.textContent =
+            "Stop Mining";
+
+        mineButton.classList.add(
+            "stop"
+        );
+
+        timer =
+            setInterval(
+                updateMiner,
+                100
+            );
+
+        updateMiner();
+
+    } catch (error) {
+
+        alert(error.message);
+
+        console.error(error);
+    }
+}
+
+async function claimMining() {
+
+    if (!sessionId) {
+        return;
+    }
+
+    const address =
+        wallet.value.trim();
+
+    try {
+
+        const response =
+            await fetch(
+                API + "/api/miner/claim",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            address,
+                            sessionId
+                        })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                "Mining claim failed"
+            );
+        }
+
+        mined.textContent =
+            Number(data.total)
+                .toFixed(4);
+
+    } catch (error) {
+
+        console.error(
+            "Mining claim failed:",
+            error
+        );
+    }
+}
+
+async function stopMining() {
+
+    if (!mining) {
+        return;
+    }
+
+    mining = false;
+
+    clearInterval(timer);
+
+    timer = null;
+
+    const address =
+        wallet.value.trim();
+
+    try {
+
+        const response =
+            await fetch(
+                API + "/api/miner/stop",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            address,
+                            sessionId
+                        })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                "Could not stop mining"
+            );
+        }
+
+        mined.textContent =
+            Number(data.total)
+                .toFixed(4);
+
+    } catch (error) {
+
+        console.error(
+            "Mining stop failed:",
+            error
+        );
+    }
+
+    status.textContent =
+        "Mining stopped";
+
+    statusDot.classList.remove(
+        "mining"
+    );
+
+    mineButton.textContent =
+        "Start Mining";
+
+    mineButton.classList.remove(
+        "stop"
+    );
+
+    sessionId = null;
+}
+
+function updateMiner() {
+
+    if (!mining) {
+        return;
+    }
+
+    const elapsed =
+        (Date.now() - started) / 1000;
+
+    const clamped =
+        Math.min(
+            elapsed,
+            DURATION
+        );
+
+    const percent =
+        (clamped / DURATION) * 100;
+
+    const reward =
+        (clamped / DURATION) * REWARD;
+
+    const remaining =
+        Math.max(
+            0,
+            DURATION - clamped
+        );
+
+    mined.textContent =
+        reward.toFixed(4);
+
+    progress.style.width =
+        percent + "%";
+
+    progressText.textContent =
+        Math.floor(percent) +
+        "% • " +
+        formatTime(remaining) +
+        " remaining";
+
+    time.textContent =
+        formatTime(remaining);
+
+    hashrate.textContent =
+        Math.floor(
+            100 +
+            Math.random() * 100
+        ) +
+        " H/s";
+
+    if (
+        Math.floor(elapsed) % 10 === 0
+    ) {
+        claimMining();
+    }
+
+    if (clamped >= DURATION) {
+        stopMining();
+    }
+}
+
+mineButton.addEventListener(
+    "click",
+    () => {
+
+        if (mining) {
+            stopMining();
+        } else {
+            startMining();
+        }
+
+    }
+);
+</script>
+
+</body>
+</html>
