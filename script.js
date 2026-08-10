@@ -945,3 +945,404 @@ setInterval(
     refreshAll,
     10000
 );
+
+const minerWallet = document.getElementById("wallet");
+const mineButton = document.getElementById("mineButton");
+const minerStatus = document.getElementById("status");
+const statusDot = document.getElementById("statusDot");
+const minedElement = document.getElementById("mined");
+const progressElement = document.getElementById("progress");
+const progressText = document.getElementById("progressText");
+const hashrateElement = document.getElementById("hashrate");
+const timeElement = document.getElementById("time");
+
+let mining = false;
+let miningStart = 0;
+let miningTimer = null;
+let miningSession = null;
+
+const MINING_DURATION = 10 * 60 * 1000;
+const MINING_REWARD = 100;
+
+function formatTime(milliseconds) {
+const totalSeconds = Math.max(
+0,
+Math.ceil(milliseconds / 1000)
+);
+
+```
+const minutes = Math.floor(totalSeconds / 60);
+const seconds = totalSeconds % 60;
+
+return (
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0")
+);
+```
+
+}
+
+function setMinerStatus(text, active) {
+minerStatus.textContent = text;
+
+```
+if (active) {
+    statusDot.classList.add("active");
+} else {
+    statusDot.classList.remove("active");
+}
+```
+
+}
+
+function updateMinerUI() {
+if (!mining) {
+return;
+}
+
+```
+const elapsed = Date.now() - miningStart;
+const remaining = Math.max(
+    0,
+    MINING_DURATION - elapsed
+);
+
+const progress = Math.min(
+    100,
+    (elapsed / MINING_DURATION) * 100
+);
+
+const earned =
+    (progress / 100) * MINING_REWARD;
+
+progressElement.style.width =
+    progress + "%";
+
+progressText.textContent =
+    Math.floor(progress) +
+    "% • " +
+    formatTime(remaining) +
+    " remaining";
+
+timeElement.textContent =
+    formatTime(remaining);
+
+minedElement.textContent =
+    earned.toFixed(4);
+
+// Lightweight simulated hashrate display.
+const hashRate =
+    Math.floor(
+        850 +
+        Math.random() * 350
+    );
+
+hashrateElement.textContent =
+    hashRate.toLocaleString() +
+    " H/s";
+
+if (remaining <= 0) {
+    finishMining();
+}
+```
+
+}
+
+async function startMining() {
+if (mining) {
+return;
+}
+
+```
+const address =
+    minerWallet.value.trim();
+
+if (!address) {
+    alert(
+        "Enter your ToastCoin wallet address first."
+    );
+
+    minerWallet.focus();
+
+    return;
+}
+
+mineButton.disabled = true;
+mineButton.textContent = "Starting...";
+
+try {
+    const response = await api(
+        "/api/miner/start",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+            body: JSON.stringify({
+                address
+            })
+        }
+    );
+
+    miningSession =
+        response.sessionId ||
+        response.session_id ||
+        response;
+
+    localStorage.setItem(
+        "toastMinerWallet",
+        address
+    );
+
+    mining = true;
+    miningStart = Date.now();
+
+    setMinerStatus(
+        "Mining TOAST...",
+        true
+    );
+
+    mineButton.disabled = false;
+    mineButton.textContent =
+        "Stop Mining";
+
+    progressElement.style.width =
+        "0%";
+
+    minedElement.textContent =
+        "0.0000";
+
+    clearInterval(miningTimer);
+
+    miningTimer = setInterval(
+        updateMinerUI,
+        250
+    );
+
+    updateMinerUI();
+
+} catch (error) {
+    console.error(
+        "Miner start error:",
+        error
+    );
+
+    mineButton.disabled = false;
+    mineButton.textContent =
+        "Start Mining";
+
+    setMinerStatus(
+        "Unable to start mining",
+        false
+    );
+
+    alert(
+        error.message ||
+        "Could not start ToastMiner."
+    );
+}
+```
+
+}
+
+async function finishMining() {
+if (!mining) {
+return;
+}
+
+```
+mining = false;
+
+clearInterval(miningTimer);
+miningTimer = null;
+
+mineButton.disabled = true;
+mineButton.textContent =
+    "Claiming TOAST...";
+
+setMinerStatus(
+    "Mining complete",
+    false
+);
+
+progressElement.style.width =
+    "100%";
+
+progressText.textContent =
+    "100% • Mining complete";
+
+timeElement.textContent =
+    "00:00";
+
+minedElement.textContent =
+    MINING_REWARD.toFixed(4);
+
+try {
+    const address =
+        minerWallet.value.trim();
+
+    const result = await api(
+        "/api/miner/claim",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+            body: JSON.stringify({
+                address,
+                sessionId:
+                    miningSession
+            })
+        }
+    );
+
+    const reward =
+        Number(
+            result.reward ||
+            result.toast ||
+            MINING_REWARD
+        );
+
+    minedElement.textContent =
+        reward.toFixed(4);
+
+    setMinerStatus(
+        "Reward claimed",
+        false
+    );
+
+    mineButton.disabled = false;
+    mineButton.textContent =
+        "Start Mining";
+
+    alert(
+        "You mined " +
+        reward.toFixed(4) +
+        " TOAST!"
+    );
+
+    if (typeof refreshAll === "function") {
+        await refreshAll();
+    }
+
+} catch (error) {
+    console.error(
+        "Miner claim error:",
+        error
+    );
+
+    setMinerStatus(
+        "Claim failed",
+        false
+    );
+
+    mineButton.disabled = false;
+    mineButton.textContent =
+        "Start Mining";
+
+    alert(
+        error.message ||
+        "Could not claim your mining reward."
+    );
+}
+```
+
+}
+
+async function stopMining() {
+if (!mining) {
+return;
+}
+
+```
+const address =
+    minerWallet.value.trim();
+
+mining = false;
+
+clearInterval(miningTimer);
+miningTimer = null;
+
+mineButton.disabled = true;
+mineButton.textContent =
+    "Stopping...";
+
+try {
+    await api(
+        "/api/miner/stop",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+            body: JSON.stringify({
+                address,
+                sessionId:
+                    miningSession
+            })
+        }
+    );
+
+} catch (error) {
+    console.error(
+        "Miner stop error:",
+        error
+    );
+}
+
+setMinerStatus(
+    "Mining stopped",
+    false
+);
+
+mineButton.disabled = false;
+mineButton.textContent =
+    "Start Mining";
+
+progressElement.style.width =
+    "0%";
+
+progressText.textContent =
+    "0% • 10:00 remaining";
+
+timeElement.textContent =
+    "10:00";
+
+minedElement.textContent =
+    "0.0000";
+
+hashrateElement.textContent =
+    "0 H/s";
+```
+
+}
+
+if (mineButton) {
+mineButton.addEventListener(
+"click",
+() => {
+if (mining) {
+stopMining();
+} else {
+startMining();
+}
+}
+);
+}
+
+const savedMinerWallet =
+localStorage.getItem(
+"toastMinerWallet"
+);
+
+if (
+savedMinerWallet &&
+minerWallet
+) {
+minerWallet.value =
+savedMinerWallet;
+}
