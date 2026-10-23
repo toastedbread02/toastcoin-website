@@ -4,6 +4,28 @@ const API = "https://toastcoin-exchange.dominikkoba22.workers.dev";
 let currentRange = "1M";
 
 
+/*
+ * The limit price inputs follow the best bid/ask until the
+ * user types their own price, so orders cross and fill.
+ */
+let buyPriceAuto = true;
+let sellPriceAuto = true;
+
+
+function priceUp(value) {
+
+    return (Math.ceil(value * 10000) / 10000)
+        .toFixed(4);
+}
+
+
+function priceDown(value) {
+
+    return (Math.floor(value * 10000) / 10000)
+        .toFixed(4);
+}
+
+
 function money(value) {
 
     return Number(value || 0)
@@ -343,11 +365,57 @@ async function loadOrderBook() {
                 : `<div class="hint">No bids</div>`;
 
 
+        prefillPriceInputs(data);
+
+
     } catch (error) {
 
         console.error(error);
 
     }
+}
+
+
+function prefillPriceInputs(data) {
+
+    const buy =
+        document.getElementById(
+            "buyPrice"
+        );
+
+    const sell =
+        document.getElementById(
+            "sellPrice"
+        );
+
+
+    if (
+        buy &&
+        buyPriceAuto &&
+        data.asks.length
+    ) {
+
+        buy.value =
+            priceUp(
+                Number(data.asks[0].price)
+            );
+    }
+
+
+    if (
+        sell &&
+        sellPriceAuto &&
+        data.bids.length
+    ) {
+
+        sell.value =
+            priceDown(
+                Number(data.bids[0].price)
+            );
+    }
+
+
+    updateTotals();
 }
 
 
@@ -615,6 +683,8 @@ async function placeBuy() {
         );
 
 
+        buyPriceAuto = true;
+
         await refreshAll();
 
 
@@ -708,6 +778,8 @@ async function placeSell() {
             "Sell order placed!"
         );
 
+
+        sellPriceAuto = true;
 
         await refreshAll();
 
@@ -936,6 +1008,41 @@ document
 
         }
     );
+
+
+const buyPriceInput =
+    document.getElementById(
+        "buyPrice"
+    );
+
+const sellPriceInput =
+    document.getElementById(
+        "sellPrice"
+    );
+
+
+if (buyPriceInput) {
+
+    buyPriceInput.addEventListener(
+        "input",
+        () => {
+
+            buyPriceAuto = false;
+        }
+    );
+}
+
+
+if (sellPriceInput) {
+
+    sellPriceInput.addEventListener(
+        "input",
+        () => {
+
+            sellPriceAuto = false;
+        }
+    );
+}
 
 
 refreshAll();
