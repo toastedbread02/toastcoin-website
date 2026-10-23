@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#09090b"
+    >
+
+    <title>Wallet • ToastCoin</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+        .wallet-stack {
+            display: grid;
+            gap: 16px;
+        }
+
+        .wallet-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 22px 0;
+        }
+
+        .wallet-actions button {
+            height: 34px;
+        }
+
+        .wallet-note {
+            padding: 14px 22px 0;
+            color: #5d5d65;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .balance-grid {
+            padding-bottom: 22px;
+        }
+
+        .order-lines {
+            padding-bottom: 8px;
+        }
+
+        .order-line {
+            display: grid;
+            grid-template-columns: 52px 1fr 1fr 1fr auto;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 22px;
+            border-top: 1px solid rgba(255, 255, 255, 0.045);
+            font-size: 12px;
+        }
+
+        .order-line.head {
+            border-top: 0;
+            color: #5d5d65;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .side-buy {
+            color: #4fd18a;
+            font-weight: 700;
+        }
+
+        .side-sell {
+            color: #ed7378;
+            font-weight: 700;
+        }
+
+        .ghost-button {
+            border: 1px solid rgba(237, 115, 120, 0.35);
+            border-radius: 8px;
+            padding: 6px 12px;
+            background: transparent;
+            color: #ed7378;
+            font-size: 11px;
+        }
+
+        .ghost-button:hover {
+            background: rgba(237, 115, 120, 0.1);
+        }
+
+        .empty-orders {
+            padding: 20px 22px;
+            color: #5d5d65;
+            font-size: 12px;
+        }
+
+        @media (max-width: 650px) {
+            .order-line {
+                grid-template-columns: 46px 1fr 1fr;
+                row-gap: 6px;
+            }
+
+            .order-line .hide-small {
+                display: none;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="ambient ambient-one"></div>
+<div class="ambient ambient-two"></div>
+
+<header class="navbar">
+
+<a
+    href="index.html"
+    class="brand"
+>
+    <span class="brand-icon">🍞</span>
+
+    <span class="brand-text">
+        ToastCoin
+    </span>
+
+    <span class="testnet-pill">
+        TESTNET
+    </span>
+</a>
+
+<nav class="nav-links">
+
+    <a href="index.html">
+        Markets
+    </a>
+
+    <a href="miner.html">
+        ToastMiner
+    </a>
+
+    <a
+        href="wallet.html"
+        class="active"
+    >
+        Wallet
+    </a>
+
+</nav>
+
+<div class="nav-status">
+    <span class="status-dot"></span>
+    Network online
+</div>
+
+</header>
+
+<main class="page">
+
+<div class="wallet-stack">
+
+    <section class="panel wallet-panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <div class="panel-title">
+                    Your wallet
+                </div>
+
+                <div class="panel-subtitle">
+                    ToastNet testnet account
+                </div>
+
+            </div>
+
+            <a
+                href="miner.html"
+                class="small-link"
+            >
+                Mine TOAST →
+            </a>
+
+        </div>
+
+
+        <div class="wallet-address">
+
+            <input
+                id="walletAddress"
+                placeholder="Create a wallet, or paste an address"
+                spellcheck="false"
+            >
+
+            <button
+                class="load-button"
+                id="useButton"
+            >
+                Use address
+            </button>
+
+        </div>
+
+
+        <div class="wallet-actions">
+
+            <button
+                class="load-button"
+                id="createButton"
+            >
+                Create wallet
+            </button>
+
+            <button
+                class="load-button"
+                id="copyButton"
+            >
+                Copy address
+            </button>
+
+        </div>
+
+
+        <div
+            class="wallet-note"
+            id="walletNote"
+        >
+            No wallet yet. Create one below — the address is stored in
+            this browser.
+        </div>
+
+
+        <div class="balance-grid">
+
+            <div class="balance-box">
+
+                <span class="balance-label">
+                    Available TOAST
+                </span>
+
+                <strong id="toastBalance">
+                    —
+                </strong>
+
+                <small id="toastLocked">
+                    0 locked
+                </small>
+
+            </div>
+
+
+            <div class="balance-box">
+
+                <span class="balance-label">
+                    Available CHF
+                </span>
+
+                <strong id="chfBalance">
+                    —
+                </strong>
+
+                <small id="chfLocked">
+                    0 locked
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="faucet-card">
+
+        <div class="faucet-icon">
+            🍞
+        </div>
+
+        <div class="faucet-content">
+
+            <div class="faucet-title">
+                Testnet faucet
+            </div>
+
+            <div class="faucet-description">
+                Get free TOAST and test CHF.
+            </div>
+
+        </div>
+
+        <button
+            class="faucet-button"
+            id="faucetButton"
+        >
+            Claim
+        </button>
+
+        <div
+            class="faucet-message"
+            id="faucetMessage"
+        ></div>
+
+    </section>
+
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <div class="panel-title">
+                    Open orders
+                </div>
+
+                <div class="panel-subtitle">
+                    Resting orders placed by this wallet
+                </div>
+
+            </div>
+
+            <button
+                class="load-button"
+                id="refreshButton"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+
+        <div
+            class="order-lines"
+            id="orderList"
+        ></div>
+
+    </section>
+
+</div>
+
+</main>
+
+
+<footer class="footer">
+
+    <div>
+        🍞 ToastCoin
+    </div>
+
+    <div>
+        Experimental testnet exchange
+    </div>
+
+</footer>
+
+
+<script>
+    const API =
+        "https://toastcoin-exchange.dominikkoba22.workers.dev";
+
+    const WALLET_KEY = "toastWallet";
+
+    const addressInput = document.getElementById("walletAddress");
+    const note = document.getElementById("walletNote");
+    const faucetMessage = document.getElementById("faucetMessage");
+    const orderList = document.getElementById("orderList");
+
+    const toastBalance = document.getElementById("toastBalance");
+    const toastLocked = document.getElementById("toastLocked");
+    const chfBalance = document.getElementById("chfBalance");
+    const chfLocked = document.getElementById("chfLocked");
+
+
+    function amount(value) {
+        return Number(value || 0).toLocaleString(
+            "en-CH",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 4
+            }
+        );
+    }
+
+
+    function money(value) {
+        return Number(value || 0).toFixed(2);
+    }
+
+
+    function savedAddress() {
+        return localStorage.getItem(WALLET_KEY) || "";
+    }
+
+
+    function currentAddress() {
+        return (
+            savedAddress() ||
+            addressInput.value.trim()
+        );
+    }
+
+
+    async function api(endpoint, options = {}) {
+        const response = await fetch(API + endpoint, options);
+
+        let data = {};
+
+        try {
+            data = await response.json();
+        } catch (error) {
+            data = {};
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                "Request failed"
+            );
+        }
+
+        return data;
+    }
+
+
+    /*
+     * The testnet has no keys: an address is the whole wallet and the
+     * Worker trusts whoever sends it. 16 random bytes keep addresses
+     * unique without pretending to be a real keypair.
+     */
+    function makeAddress() {
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
+
+        return (
+            "t1_" +
+            Array.from(bytes)
+                .map(
+                    byte => byte.toString(16).padStart(2, "0")
+                )
+                .join("")
+        );
+    }
+
+
+    async function createWallet() {
+        const existing = savedAddress();
+
+        if (
+            existing &&
+            !confirm(
+                "Replace the current wallet?\n\n" +
+                existing +
+                "\n\nIts address stays valid, so save it if it holds funds."
+            )
+        ) {
+            return;
+        }
+
+        const address = makeAddress();
+
+        localStorage.setItem(WALLET_KEY, address);
+        addressInput.value = address;
+
+        note.textContent =
+            "New wallet created. This address is the whole wallet — " +
+            "copy it to keep access from another browser.";
+
+        await refresh();
+    }
+
+
+    async function useAddress() {
+        const address = addressInput.value.trim();
+
+        if (!address) {
+            alert("Paste or create a wallet address first.");
+            return;
+        }
+
+        if (address.startsWith("mm:")) {
+            alert("That address is reserved for the market maker.");
+            return;
+        }
+
+        localStorage.setItem(WALLET_KEY, address);
+
+        note.textContent =
+            "Loaded " + address + " from this browser.";
+
+        await refresh();
+    }
+
+
+    async function copyAddress() {
+        const address = currentAddress();
+
+        if (!address) {
+            alert("There is no wallet address to copy yet.");
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(address);
+            note.textContent = "Address copied to the clipboard.";
+        } catch (error) {
+            addressInput.select();
+            note.textContent =
+                "Copy blocked by the browser — the address is selected, press Ctrl/Cmd + C.";
+        }
+    }
+
+
+    function renderBalance(data) {
+        toastBalance.textContent = amount(data.toast);
+        toastLocked.textContent = amount(data.toast_locked) + " locked";
+
+        chfBalance.textContent = money(data.chf);
+        chfLocked.textContent = money(data.chf_locked) + " locked";
+    }
+
+
+    function clearBalance() {
+        toastBalance.textContent = "—";
+        toastLocked.textContent = "0 locked";
+        chfBalance.textContent = "—";
+        chfLocked.textContent = "0 locked";
+    }
+
+
+    function renderOrders(orders) {
+        orderList.innerHTML = "";
+
+        if (!orders.length) {
+            orderList.innerHTML =
+                '<div class="empty-orders">No open orders.</div>';
+
+            return;
+        }
+
+        const head = document.createElement("div");
+        head.className = "order-line head";
+
+        head.innerHTML =
+            "<span>Side</span>" +
+            "<span>Price</span>" +
+            "<span>Amount</span>" +
+            "<span class=\"hide-small\">Total</span>" +
+            "<span></span>";
+
+        orderList.appendChild(head);
+
+        orders.forEach(order => {
+            const row = document.createElement("div");
+            row.className = "order-line";
+
+            const side = document.createElement("span");
+            side.className =
+                order.side === "buy" ? "side-buy" : "side-sell";
+            side.textContent = order.side.toUpperCase();
+
+            const price = document.createElement("span");
+            price.textContent =
+                Number(order.price).toFixed(4) + " CHF";
+
+            const remaining = document.createElement("span");
+            remaining.textContent =
+                amount(order.remaining) + " TOAST";
+
+            const total = document.createElement("span");
+            total.className = "hide-small";
+            total.textContent =
+                money(order.remaining * order.price) + " CHF";
+
+            const cancel = document.createElement("button");
+            cancel.className = "ghost-button";
+            cancel.textContent = "Cancel";
+            cancel.addEventListener(
+                "click",
+                () => cancelOrder(order.id)
+            );
+
+            row.appendChild(side);
+            row.appendChild(price);
+            row.appendChild(remaining);
+            row.appendChild(total);
+            row.appendChild(cancel);
+
+            orderList.appendChild(row);
+        });
+    }
+
+
+    async function loadOrders(address) {
+        try {
+            const data = await api(
+                "/api/orders?address=" +
+                encodeURIComponent(address)
+            );
+
+            renderOrders(data.orders || []);
+
+        } catch (error) {
+            console.error("Could not load open orders:", error);
+
+            orderList.innerHTML =
+                '<div class="empty-orders">' +
+                "Could not load open orders: " +
+                error.message +
+                "</div>";
+        }
+    }
+
+
+    async function refresh() {
+        const address = currentAddress();
+
+        if (!address) {
+            clearBalance();
+
+            orderList.innerHTML =
+                '<div class="empty-orders">No wallet loaded.</div>';
+
+            return;
+        }
+
+        addressInput.value = address;
+
+        try {
+            const data = await api(
+                "/api/balance?address=" +
+                encodeURIComponent(address)
+            );
+
+            renderBalance(data);
+
+        } catch (error) {
+            console.error("Could not load balance:", error);
+        }
+
+        await loadOrders(address);
+    }
+
+
+    async function claimFaucet() {
+        const address = currentAddress();
+
+        if (!address) {
+            alert("Create or load a wallet first.");
+            return;
+        }
+
+        localStorage.setItem(WALLET_KEY, address);
+
+        faucetMessage.textContent = "Claiming...";
+
+        try {
+            const data = await api(
+                "/api/faucet",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({ address })
+                }
+            );
+
+            faucetMessage.textContent =
+                "Received " +
+                amount(data.toast) +
+                " TOAST and " +
+                money(data.chf) +
+                " CHF.";
+
+            await refresh();
+
+        } catch (error) {
+            faucetMessage.textContent = error.message;
+        }
+    }
+
+
+    async function cancelOrder(orderId) {
+        const address = currentAddress();
+
+        if (!address) {
+            return;
+        }
+
+        try {
+            await api(
+                "/api/order",
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        address,
+                        orderId
+                    })
+                }
+            );
+
+            await refresh();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+
+    document
+        .getElementById("createButton")
+        .addEventListener("click", createWallet);
+
+    document
+        .getElementById("useButton")
+        .addEventListener("click", useAddress);
+
+    document
+        .getElementById("copyButton")
+        .addEventListener("click", copyAddress);
+
+    document
+        .getElementById("faucetButton")
+        .addEventListener("click", claimFaucet);
+
+    document
+        .getElementById("refreshButton")
+        .addEventListener("click", refresh);
+
+    addressInput.addEventListener(
+        "keydown",
+        event => {
+            if (event.key === "Enter") {
+                useAddress();
+            }
+        }
+    );
+
+
+    refresh();
+
+</script>
+
+</body>
+
+</html>

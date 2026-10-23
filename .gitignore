@@ -1,0 +1,6 @@
+# Nested Cloudflare Worker project: it has its own git repository and
+# is committed from inside ToastCoinExchange, not from here.
+ToastCoinExchange/
+
+# Local Cloudflare/Wrangler state, in case the Worker is ever run from here.
+.wrangler/
