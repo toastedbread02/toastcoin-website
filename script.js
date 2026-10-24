@@ -120,8 +120,48 @@ async function loadChart() {
             );
 
 
+        let data =
+            result.data || [];
+
+        let note = "";
+
+
+        /*
+         * price_history only stores a row per trade, so a window where
+         * nothing traded holds nothing to draw even though the market has
+         * a real price. Fall back to the full history rather than showing
+         * an empty chart.
+         */
+        if (
+            data.length < 2 &&
+            currentRange !== "MAX"
+        ) {
+
+            const wider =
+                await api(
+                    "/api/history?range=MAX"
+                );
+
+            const history =
+                wider.data || [];
+
+
+            if (
+                history.length >
+                data.length
+            ) {
+
+                data = history;
+
+                note =
+                    "No trades in this range — showing all history";
+            }
+        }
+
+
         drawChart(
-            result.data
+            data,
+            note
         );
 
 
@@ -133,11 +173,17 @@ async function loadChart() {
 }
 
 
-function drawChart(data) {
+function drawChart(data, note = "") {
 
     const canvas =
         document.getElementById(
             "chart"
+        );
+
+
+    const noteElement =
+        document.getElementById(
+            "chartNote"
         );
 
 
@@ -194,6 +240,12 @@ function drawChart(data) {
         empty.style.display =
             "flex";
 
+
+        noteElement.textContent = "";
+
+        noteElement.style.display =
+            "none";
+
         return;
 
     }
@@ -201,6 +253,13 @@ function drawChart(data) {
 
     empty.style.display =
         "none";
+
+
+    noteElement.textContent =
+        note;
+
+    noteElement.style.display =
+        note ? "block" : "none";
 
 
     const prices =
