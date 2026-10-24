@@ -45,6 +45,30 @@ function number(value) {
 }
 
 
+function round2(value) {
+
+    return Math.round(
+        Number(value || 0) * 100
+    ) / 100;
+}
+
+
+/*
+ * Compact money for headlines: 30.3 reads better than 30.3000 next to a
+ * four-decimal price.
+ */
+function amount(value) {
+
+    return Number(round2(value))
+        .toLocaleString(
+            undefined,
+            {
+                maximumFractionDigits: 2
+            }
+        );
+}
+
+
 async function api(
     endpoint,
     options = {}
@@ -91,14 +115,67 @@ async function loadMarket() {
             " CHF";
 
 
+        /*
+         * Supply is minted TOAST held by wallets, so it moves with every
+         * faucet claim and mining reward. Two decimals keep small mining
+         * rewards visible instead of rounding them away.
+         */
         document
-            .getElementById("marketInfo")
+            .getElementById("statSupply")
             .textContent =
-            "24h volume: " +
-            number(data.volume24h) +
-            " TOAST  •  " +
-            "Supply: " +
-            number(data.supply);
+            amount(data.supply) +
+            " TOAST";
+
+
+        document
+            .getElementById("statVolume")
+            .textContent =
+            amount(data.volume24h) +
+            " TOAST";
+
+
+        document
+            .getElementById("statCap")
+            .textContent =
+            amount(data.marketCap) +
+            " CHF";
+
+
+        const change =
+            data.change24h;
+
+        const changeElement =
+            document.getElementById(
+                "statChange"
+            );
+
+
+        if (
+            typeof change !== "number" ||
+            !Number.isFinite(change)
+        ) {
+
+            changeElement.textContent =
+                "—";
+
+            changeElement.className =
+                "stat-value";
+
+        } else {
+
+            changeElement.textContent =
+                (change > 0 ? "+" : "") +
+                change.toFixed(2) +
+                "%";
+
+            changeElement.className =
+                "stat-value " +
+                (change > 0
+                    ? "up"
+                    : change < 0
+                        ? "down"
+                        : "flat");
+        }
 
 
     } catch (error) {
@@ -386,12 +463,40 @@ async function loadOrderBook() {
             );
 
 
+        /*
+         * Each row gets a depth bar sized against the deepest level on its
+         * own side, so the book reads at a glance.
+         */
+        const askMax =
+            Math.max(
+                ...data.asks.map(
+                    order => Number(order.amount)
+                ),
+                1
+            );
+
+        const bidMax =
+            Math.max(
+                ...data.bids.map(
+                    order => Number(order.amount)
+                ),
+                1
+            );
+
+
         asks.innerHTML =
             data.asks.length
                 ? data.asks
                     .map(
                         order => `
-                            <div class="order-row ask">
+                            <div
+                                class="order-row ask"
+                                style="--depth: ${(
+                                    Number(order.amount) /
+                                    askMax *
+                                    100
+                                ).toFixed(1)}%"
+                            >
                                 <span>
                                     ${money(order.price)}
                                 </span>
@@ -410,7 +515,14 @@ async function loadOrderBook() {
                 ? data.bids
                     .map(
                         order => `
-                            <div class="order-row bid">
+                            <div
+                                class="order-row bid"
+                                style="--depth: ${(
+                                    Number(order.amount) /
+                                    bidMax *
+                                    100
+                                ).toFixed(1)}%"
+                            >
                                 <span>
                                     ${money(order.price)}
                                 </span>
